@@ -29,7 +29,42 @@ fn chord(token: &str, shift: i32, flats: bool) -> Option<String> {
     Some(format!("{name}{suffix}{bass}"))
 }
 
+/// Transpose [C#m7/G#] chords embedded in lyrics without touching the lyrics.
+fn bracketed_line(input: &str, shift: i32, flats: bool) -> Option<String> {
+    let mut output = String::with_capacity(input.len());
+    let mut remaining = input;
+    let mut changed = false;
+    while let Some(open) = remaining.find('[') {
+        output.push_str(&remaining[..open]);
+        let after_open = &remaining[open + 1..];
+        let Some(close) = after_open.find(']') else {
+            output.push_str(&remaining[open..]);
+            remaining = "";
+            break;
+        };
+        let inside = &after_open[..close];
+        match chord(inside, shift, flats) {
+            Some(transposed) => {
+                output.push('[');
+                output.push_str(&transposed);
+                output.push(']');
+                changed = true;
+            }
+            None => {
+                // Preserve section headings and malformed bracketed text exactly.
+                output.push_str(&remaining[open..open + close + 2]);
+            }
+        }
+        remaining = &after_open[close + 1..];
+    }
+    output.push_str(remaining);
+    changed.then_some(output)
+}
+
 fn line(input: &str, shift: i32, flats: bool) -> String {
+    if let Some(transposed) = bracketed_line(input, shift, flats) {
+        return transposed;
+    }
     let tokens: Vec<&str> = input.split_whitespace().collect();
     if tokens.is_empty() || tokens.iter().any(|t| *t != "|" && chord(t, shift, flats).is_none()) {
         return input.to_owned();
@@ -82,5 +117,23 @@ mod tests {
     #[test] fn enharmonic_and_overflow() { assert_eq!(chord("B#",i32::MAX,true).unwrap(),"G"); assert_eq!(chord("Cb",1,false).unwrap(),"C"); }
     #[test] fn preserve_lyrics_and_columns() { assert_eq!(transpose("C    G/B   Am\nA vida segue\n",2,false),"D    A/C#  Bm\nA vida segue\n"); }
     #[test] fn flat_output_and_crlf() { assert_eq!(transpose("C  F\r\n",1,true),"Db Gb\r\n"); }
+    #[test] fn transpose_inline_lyrics_and_bass_chords() {
+        assert_eq!(
+            transpose("[Am]Cantarei [G/B]com alegria\n", 2, false),
+            "[Bm]Cantarei [A/C#]com alegria\n"
+        );
+    }
+    #[test] fn preserve_headings_unmatched_brackets_and_crlf() {
+        assert_eq!(
+            transpose("[Refrão]\r\n[Am]Eu canto [F]sempre\r\n[sem fechamento\n", -2, true),
+            "[Refrão]\r\n[Gm]Eu canto [Eb]sempre\r\n[sem fechamento\n"
+        );
+    }
+    #[test] fn valid_inline_chord_does_not_modify_surrounding_words() {
+        assert_eq!(
+            transpose("Acordes [C] e [???] e texto\n", 2, false),
+            "Acordes [D] e [???] e texto\n"
+        );
+    }
     #[test] fn reject_ambiguous_words() { assert!(chord("Deus",2,false).is_none()); assert_eq!(transpose("Canta ao Senhor",2,false),"Canta ao Senhor"); }
 }
