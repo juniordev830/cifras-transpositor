@@ -17,5 +17,6 @@
     "Cargo",
     "Biblioteca padrão"
   ],
-  "validation": "GitHub Actions pendente"
+  "validation": "GitHub Actions pendente",
+  "github_url": "https://github.com/juniordev830/cifras-transpositor"
 }
