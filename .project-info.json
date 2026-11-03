@@ -1,0 +1,21 @@
+{
+  "name": "cifras-transpositor",
+  "title": "Cifras Transpositor",
+  "description": "Transposição de cifras entre tonalidades preservando o alinhamento.",
+  "primary_language": "Rust",
+  "proposed_technologies": "Rust, nom e clap",
+  "status": "initial-core",
+  "github_created": true,
+  "application_implemented": true,
+  "planned_features": [
+    "Identificar cifras e acidentes",
+    "Transpor sem alterar a letra",
+    "Preservar alinhamento e exportar texto"
+  ],
+  "implemented_technologies": [
+    "Rust",
+    "Cargo",
+    "Biblioteca padrão"
+  ],
+  "validation": "GitHub Actions pendente"
+}

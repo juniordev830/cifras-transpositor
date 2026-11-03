@@ -1,0 +1,8 @@
+[package]
+name = "cifras-transpositor"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+description = "Transposição de linhas de cifras com baixo e acidentes"
+
+[dependencies]

@@ -1,0 +1,15 @@
+name: Validar Rust
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Compilar e testar
+        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo test --offline
+      - name: Executar exemplo
+        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo run --offline -- 2 examples/cancao.txt
