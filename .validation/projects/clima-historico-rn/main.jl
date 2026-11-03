@@ -1,4 +1,4 @@
-using Dates, Statistics
+using Dates
 struct Observation
     date::Date
     station::String
@@ -28,7 +28,7 @@ function summarize(observations)
     result=[]
     for ((station,month),rows) in sort(collect(groups);by=first)
         temperatures=collect(skipmissing([r.temperature for r in rows])); rains=collect(skipmissing([r.rain for r in rows]))
-        push!(result,(station=station,month=month,expected_days=daysinmonth(month),temperature_days=length(temperatures),rain_days=length(rains),mean_temperature=isempty(temperatures) ? missing : mean(temperatures),observed_rain=isempty(rains) ? missing : sum(rains)))
+        push!(result,(station=station,month=month,expected_days=daysinmonth(month),temperature_days=length(temperatures),rain_days=length(rains),mean_temperature=isempty(temperatures) ? missing : sum(temperatures)/length(temperatures),observed_rain=isempty(rains) ? missing : sum(rains)))
     end
     result
 end

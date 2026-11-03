@@ -15,7 +15,7 @@ func preview(_ folder: URL) throws -> [Move] {
     let entries=try manager.contentsOfDirectory(at:folder,includingPropertiesForKeys:[.isRegularFileKey,.isSymbolicLinkKey],options:[.skipsHiddenFiles])
     return try entries.sorted(by:{$0.lastPathComponent<$1.lastPathComponent}).compactMap { file in
         let values=try file.resourceValues(forKeys:[.isRegularFileKey,.isSymbolicLinkKey])
-        guard values.isRegularFile==true,values.isSymbolicLink!=true else { return nil }
+        guard values.isRegularFile==true,values.isSymbolicLink != true else { return nil }
         let target=folder.appendingPathComponent(category(file.lastPathComponent)).appendingPathComponent(file.lastPathComponent)
         return Move(source:file.path,destination:target.path,conflict:manager.fileExists(atPath:target.path))
     }

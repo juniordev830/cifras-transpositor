@@ -7,7 +7,7 @@ func plan(_ input: Input) throws -> Schedule {
     guard input.capacity.count == 7, input.capacity.allSatisfy({ (0...1440).contains($0) }), Set(input.tasks.map(\.id)).count == input.tasks.count,
         input.tasks.allSatisfy({ !$0.id.isEmpty && (1...10080).contains($0.minutes) && (1...5).contains($0.priority) }) else { throw Problem.invalidInput }
     var result=Schedule(days:Array(repeating:[],count:7),remaining:input.capacity,backlog:[])
-    for task in input.tasks.sorted(by:{ $0.priority != $1.priority ? $0.priority > $1.priority : $0.id < $1.id }) {
+    for task in input.tasks.sorted(by:{ $0.priority  !=  $1.priority ? $0.priority > $1.priority : $0.id < $1.id }) {
         if let day=result.remaining.firstIndex(where: { $0 >= task.minutes }) {
             result.days[day].append(task.id); result.remaining[day] -= task.minutes
         } else { result.backlog.append(task.id) }

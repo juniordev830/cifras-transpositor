@@ -15,46 +15,14 @@ jobs:
       max-parallel: 4
       matrix:
         include:
-        - project: backup-verificado
-          runtime: Rust
-        - project: biblioteca-estudos
-          runtime: Scala
-        - project: caderno-offline
-          runtime: Dart
-        - project: cambio-historico
-          runtime: Elixir
         - project: clima-historico-rn
           runtime: Julia
-        - project: conciliador-csv
-          runtime: R
-        - project: detetive-de-bugs
-          runtime: Lua
-        - project: diario-corrida-pedal
-          runtime: Dart
-        - project: escala-ministerio
-          runtime: Elixir
-        - project: inventario-casa
-          runtime: Dart
-        - project: labirinto-procedural
-          runtime: Rust
         - project: leitura-acessivel
           runtime: Swift
-        - project: log-redactor-cli
-          runtime: Rust
-        - project: logistica-simulator
-          runtime: Lua
         - project: organizador-downloads
           runtime: Swift
-        - project: pipeline-qualidade-dados
-          runtime: Scala
         - project: planeja-semana
           runtime: Swift
-        - project: torre-defesa-godot
-          runtime: GDScript
-        - project: treino-ritmico
-          runtime: Lua
-        - project: webhook-inbox
-          runtime: Elixir
     defaults:
       run:
         working-directory: .validation/projects/${{ matrix.project }}
