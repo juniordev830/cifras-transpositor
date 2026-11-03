@@ -1,0 +1,20 @@
+{
+  "name": "torre-defesa-godot",
+  "title": "Torre de Defesa",
+  "description": "Jogo de estratégia com ondas de inimigos, torres e melhorias.",
+  "primary_language": "GDScript",
+  "proposed_technologies": "GDScript e Godot 4",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Criar uma fase jogável",
+    "Implementar torres e ondas",
+    "Adicionar vitória, derrota e reinício"
+  ],
+  "implemented_technologies": [
+    "GDScript",
+    "Godot 4"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

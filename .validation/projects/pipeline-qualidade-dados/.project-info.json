@@ -1,0 +1,20 @@
+{
+  "name": "pipeline-qualidade-dados",
+  "title": "Pipeline de Qualidade de Dados",
+  "description": "Importação de dados com validação e separação de registros inválidos.",
+  "primary_language": "Scala",
+  "proposed_technologies": "Scala, Apache Spark e Delta Lake",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Definir esquema dos dados",
+    "Validar campos e duplicatas",
+    "Separar registros aceitos e rejeitados"
+  ],
+  "implemented_technologies": [
+    "Scala",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

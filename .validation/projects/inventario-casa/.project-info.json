@@ -1,0 +1,20 @@
+{
+  "name": "inventario-casa",
+  "title": "Inventário da Casa",
+  "description": "Catálogo de objetos por cômodo com exportação de inventário.",
+  "primary_language": "Dart",
+  "proposed_technologies": "Dart, Flutter e Drift",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Cadastrar cômodos e objetos",
+    "Adicionar fotos locais",
+    "Exportar inventário"
+  ],
+  "implemented_technologies": [
+    "Dart",
+    "dart:io e dart:convert"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

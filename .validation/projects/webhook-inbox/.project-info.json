@@ -1,0 +1,21 @@
+{
+  "name": "webhook-inbox",
+  "title": "Webhook Inbox",
+  "description": "Recepção e inspeção de webhooks em ambiente de desenvolvimento.",
+  "primary_language": "Elixir",
+  "proposed_technologies": "Elixir, Phoenix LiveView, OTP e ETS",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Receber requisições de teste",
+    "Exibir cabeçalhos e conteúdo",
+    "Aplicar limites de tamanho e retenção"
+  ],
+  "implemented_technologies": [
+    "Elixir",
+    "GenServer ou biblioteca padrão",
+    "ExUnit"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

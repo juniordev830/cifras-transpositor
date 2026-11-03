@@ -1,0 +1,7 @@
+local r=require('rules');local s=r.new()
+r.move(s,-9,0);assert(s.x==2)
+s.x=1;s.y=1;assert(r.interact(s)=='coletado' and s.holding=='A')
+s.x=9;s.y=6;assert(r.interact(s)=='entregue' and s.score==100)
+s.holding='C';assert(r.interact(s)=='pedido_incorreto' and s.score==100)
+s.remaining=0;r.move(s,1,0);assert(r.interact(s)=='fim')
+print('5 cenarios OK')

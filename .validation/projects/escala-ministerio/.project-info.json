@@ -1,0 +1,21 @@
+{
+  "name": "escala-ministerio",
+  "title": "Escala Ministério",
+  "description": "Organização de disponibilidade e escalas de músicos.",
+  "primary_language": "Elixir",
+  "proposed_technologies": "Elixir, Phoenix LiveView e OTP",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Cadastrar participantes e instrumentos",
+    "Registrar disponibilidade",
+    "Montar escalas e identificar conflitos"
+  ],
+  "implemented_technologies": [
+    "Elixir",
+    "GenServer ou biblioteca padrão",
+    "ExUnit"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

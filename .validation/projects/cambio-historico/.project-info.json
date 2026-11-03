@@ -1,0 +1,21 @@
+{
+  "name": "cambio-historico",
+  "title": "Câmbio Histórico",
+  "description": "Consulta e comparação de cotações históricas de moedas.",
+  "primary_language": "Elixir",
+  "proposed_technologies": "Elixir, OTP e Phoenix LiveView",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Consultar períodos na fonte pública",
+    "Exibir data, fonte e cotação",
+    "Comparar períodos e exportar dados"
+  ],
+  "implemented_technologies": [
+    "Elixir",
+    "GenServer ou biblioteca padrão",
+    "ExUnit"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

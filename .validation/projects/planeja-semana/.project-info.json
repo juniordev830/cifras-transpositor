@@ -1,0 +1,20 @@
+{
+  "name": "planeja-semana",
+  "title": "Planeja Semana",
+  "description": "Planejamento de tarefas conforme a capacidade disponível na semana.",
+  "primary_language": "Swift",
+  "proposed_technologies": "Swift, Foundation, Codable e Swift Package Manager",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Definir capacidade semanal",
+    "Distribuir e reagendar tarefas",
+    "Salvar dados no navegador"
+  ],
+  "implemented_technologies": [
+    "Swift",
+    "Foundation"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

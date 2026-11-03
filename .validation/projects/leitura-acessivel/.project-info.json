@@ -1,0 +1,20 @@
+{
+  "name": "leitura-acessivel",
+  "title": "Leitura Acessível",
+  "description": "Leitor de textos com ajustes de fonte, contraste e espaçamento.",
+  "primary_language": "Swift",
+  "proposed_technologies": "Swift, Foundation, Codable e HTML semântico",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Importar texto",
+    "Ajustar apresentação e navegação por teclado",
+    "Salvar preferências locais"
+  ],
+  "implemented_technologies": [
+    "Swift",
+    "Foundation"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

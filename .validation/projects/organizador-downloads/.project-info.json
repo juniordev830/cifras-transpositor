@@ -1,0 +1,20 @@
+{
+  "name": "organizador-downloads",
+  "title": "Organizador de Downloads",
+  "description": "Organização de arquivos por regras com prévia e desfazer.",
+  "primary_language": "Swift",
+  "proposed_technologies": "Swift, Foundation e Swift Package Manager",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Definir regras por extensão",
+    "Mostrar prévia antes de mover",
+    "Registrar operações para desfazer"
+  ],
+  "implemented_technologies": [
+    "Swift",
+    "Foundation"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

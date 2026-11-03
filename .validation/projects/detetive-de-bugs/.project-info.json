@@ -1,0 +1,20 @@
+{
+  "name": "detetive-de-bugs",
+  "title": "Detetive de Bugs",
+  "description": "Jogo educativo para identificar erros em pequenos programas.",
+  "primary_language": "Lua",
+  "proposed_technologies": "Lua e LÖVE",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Apresentar desafios de código",
+    "Receber resposta sem executar código arbitrário",
+    "Explicar erros e acompanhar pontuação"
+  ],
+  "implemented_technologies": [
+    "Lua",
+    "LÖVE"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

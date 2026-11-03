@@ -1,0 +1,21 @@
+{
+  "name": "log-redactor-cli",
+  "title": "Log Redactor CLI",
+  "description": "Ocultação de padrões configurados de dados sensíveis em logs.",
+  "primary_language": "Rust",
+  "proposed_technologies": "Rust, regex e clap",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Aplicar regras de mascaramento",
+    "Preservar arquivo original",
+    "Gerar saída e resumo de substituições"
+  ],
+  "implemented_technologies": [
+    "Rust",
+    "Cargo",
+    "regex 1.11.1"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

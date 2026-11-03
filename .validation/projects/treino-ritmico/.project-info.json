@@ -1,0 +1,20 @@
+{
+  "name": "treino-ritmico",
+  "title": "Treino Rítmico",
+  "description": "Metrônomo e exercícios de ritmo com registro de sessões.",
+  "primary_language": "Lua",
+  "proposed_technologies": "Lua, LÖVE Audio e LÖVE Timer",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Configurar andamento e compasso",
+    "Reproduzir pulsos com controle de início",
+    "Registrar sessões de prática"
+  ],
+  "implemented_technologies": [
+    "Lua",
+    "LÖVE"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

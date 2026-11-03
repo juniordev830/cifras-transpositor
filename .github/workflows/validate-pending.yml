@@ -1,0 +1,120 @@
+name: Validar vinte projetos pendentes
+'on':
+  push:
+    branches:
+    - validation/pending-initial-cores
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+        - project: backup-verificado
+          runtime: Rust
+        - project: biblioteca-estudos
+          runtime: Scala
+        - project: caderno-offline
+          runtime: Dart
+        - project: cambio-historico
+          runtime: Elixir
+        - project: clima-historico-rn
+          runtime: Julia
+        - project: conciliador-csv
+          runtime: R
+        - project: detetive-de-bugs
+          runtime: Lua
+        - project: diario-corrida-pedal
+          runtime: Dart
+        - project: escala-ministerio
+          runtime: Elixir
+        - project: inventario-casa
+          runtime: Dart
+        - project: labirinto-procedural
+          runtime: Rust
+        - project: leitura-acessivel
+          runtime: Swift
+        - project: log-redactor-cli
+          runtime: Rust
+        - project: logistica-simulator
+          runtime: Lua
+        - project: organizador-downloads
+          runtime: Swift
+        - project: pipeline-qualidade-dados
+          runtime: Scala
+        - project: planeja-semana
+          runtime: Swift
+        - project: torre-defesa-godot
+          runtime: GDScript
+        - project: treino-ritmico
+          runtime: Lua
+        - project: webhook-inbox
+          runtime: Elixir
+    defaults:
+      run:
+        working-directory: .validation/projects/${{ matrix.project }}
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      with:
+        persist-credentials: false
+    - name: Analisar e testar
+      run: docker run --rm -v "$PWD:/work" -w /work dart:3.5.4 sh -c 'dart analyze bin/main.dart && dart run bin/main.dart --self-test'
+      if: ${{ matrix.runtime == 'Dart' }}
+    - name: Testar
+      run: docker run --rm -v "$PWD:/work" -w /work elixir:1.18 elixir main.exs --self-test
+      if: ${{ matrix.runtime == 'Elixir' }}
+    - name: Instalar Godot oficial
+      run: 'curl --fail --location --retry 2 -o godot.zip https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+
+        unzip -q godot.zip -d /tmp/godot-bin
+
+        '
+      if: ${{ matrix.runtime == 'GDScript' }}
+    - name: Importar e testar
+      run: '/tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --editor --quit
+
+        /tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --script tests.gd
+
+        /tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --quit-after 3
+
+        '
+      if: ${{ matrix.runtime == 'GDScript' }}
+    - name: Testar
+      run: docker run --rm -v "$PWD:/work" -w /work julia:1.11 julia main.jl --self-test
+      if: ${{ matrix.runtime == 'Julia' }}
+    - name: Instalar Lua
+      run: sudo apt-get update && sudo apt-get install -y lua5.4
+      if: ${{ matrix.runtime == 'Lua' }}
+    - name: Verificar sintaxe e testar regras
+      run: 'for file in *.lua; do luac5.4 -p "$file"; done
+
+        lua5.4 tests.lua
+
+        '
+      if: ${{ matrix.runtime == 'Lua' }}
+    - name: Testar
+      run: docker run --rm -v "$PWD:/work" -w /work r-base:4.4.2 Rscript main.R --self-test
+      if: ${{ matrix.runtime == 'R' }}
+    - name: Compilar e testar
+      run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo test
+      if: ${{ matrix.runtime == 'Rust' }}
+    - name: Instalar Scala CLI
+      run: 'curl --fail --location --retry 2 -o scala-cli.gz https://github.com/VirtusLab/scala-cli/releases/download/v1.6.1/scala-cli-x86_64-pc-linux.gz
+
+        gzip -d scala-cli.gz
+
+        chmod +x scala-cli
+
+        '
+      if: ${{ matrix.runtime == 'Scala' }}
+    - name: Compilar e testar
+      run: ./scala-cli run Main.scala --server=false -- --self-test
+      if: ${{ matrix.runtime == 'Scala' }}
+    - name: Compilar e testar
+      run: docker run --rm -v "$PWD:/work" -w /work swift:6.0-jammy swift main.swift --self-test
+      if: ${{ matrix.runtime == 'Swift' }}

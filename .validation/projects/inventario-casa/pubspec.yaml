@@ -1,0 +1,4 @@
+name: inventario_casa
+version: 0.1.0
+environment:
+  sdk: ">=3.5.0 <4.0.0"

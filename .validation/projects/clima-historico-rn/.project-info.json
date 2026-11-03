@@ -1,0 +1,20 @@
+{
+  "name": "clima-historico-rn",
+  "title": "Clima Histórico RN",
+  "description": "Exploração de séries históricas de chuva e temperatura do RN.",
+  "primary_language": "Julia",
+  "proposed_technologies": "Julia, CSV.jl, DataFrames.jl e Makie",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Importar dados históricos de estações",
+    "Mostrar falhas e cobertura dos dados",
+    "Comparar chuva e temperatura por período"
+  ],
+  "implemented_technologies": [
+    "Julia",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

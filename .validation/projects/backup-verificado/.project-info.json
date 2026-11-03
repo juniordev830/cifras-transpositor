@@ -1,0 +1,21 @@
+{
+  "name": "backup-verificado",
+  "title": "Backup Verificado",
+  "description": "Cópias incrementais de arquivos com verificação de integridade.",
+  "primary_language": "Rust",
+  "proposed_technologies": "Rust, clap e BLAKE3",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Simular plano de cópia",
+    "Copiar arquivos para destino escolhido",
+    "Verificar hashes e oferecer restauração"
+  ],
+  "implemented_technologies": [
+    "Rust",
+    "Cargo",
+    "GNU coreutils / SHA-256"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

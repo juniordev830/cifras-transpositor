@@ -1,0 +1,20 @@
+{
+  "name": "biblioteca-estudos",
+  "title": "Biblioteca de Estudos",
+  "description": "Catálogo de livros, fichamentos, citações e assuntos estudados.",
+  "primary_language": "Scala",
+  "proposed_technologies": "Scala, Scala CLI e DuckDB",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Cadastrar obras e assuntos",
+    "Escrever fichamentos com referência",
+    "Buscar e exportar anotações"
+  ],
+  "implemented_technologies": [
+    "Scala",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

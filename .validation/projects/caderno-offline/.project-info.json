@@ -1,0 +1,20 @@
+{
+  "name": "caderno-offline",
+  "title": "Caderno Offline",
+  "description": "Anotações em Markdown com busca, armazenamento local e exportação.",
+  "primary_language": "Dart",
+  "proposed_technologies": "Dart, Flutter, Markdown e Drift",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Editar notas em Markdown",
+    "Buscar no conteúdo",
+    "Exportar e importar notas"
+  ],
+  "implemented_technologies": [
+    "Dart",
+    "dart:io e dart:convert"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

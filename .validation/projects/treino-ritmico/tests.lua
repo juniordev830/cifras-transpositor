@@ -1,0 +1,6 @@
+local r=require('rules')
+assert(r.interval(120)==0.5)
+local phase,beats=r.advance(0.4,0.2,120);assert(math.abs(phase-0.1)<0.00001 and beats==1)
+local p,n=r.advance(0,2,120);assert(p==0 and n==4)
+assert(not pcall(r.interval,0) and not pcall(r.interval,0/0))
+print('4 cenarios OK')

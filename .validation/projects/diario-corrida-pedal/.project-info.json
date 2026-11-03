@@ -1,0 +1,20 @@
+{
+  "name": "diario-corrida-pedal",
+  "title": "Diário de Corrida e Pedal",
+  "description": "Registro de atividades com evolução semanal de distância e duração.",
+  "primary_language": "Dart",
+  "proposed_technologies": "Dart, Flutter, Riverpod e Drift",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Registrar corrida e pedal manualmente",
+    "Consultar histórico semanal",
+    "Exibir evolução de distância e duração"
+  ],
+  "implemented_technologies": [
+    "Dart",
+    "dart:io e dart:convert"
+  ],
+  "validation": "Consulte GitHub Actions"
+}

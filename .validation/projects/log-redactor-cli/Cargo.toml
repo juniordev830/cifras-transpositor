@@ -1,0 +1,8 @@
+[package]
+name = "log-redactor-cli"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+
+[dependencies]
+regex = "=1.11.1"

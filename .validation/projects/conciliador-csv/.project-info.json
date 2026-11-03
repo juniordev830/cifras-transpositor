@@ -1,0 +1,20 @@
+{
+  "name": "conciliador-csv",
+  "title": "Conciliador CSV",
+  "description": "Comparação de arquivos tabulares para encontrar divergências.",
+  "primary_language": "R",
+  "proposed_technologies": "R, data.table e Quarto",
+  "status": "initial-core",
+  "github_created": false,
+  "application_implemented": true,
+  "planned_features": [
+    "Importar dois arquivos CSV",
+    "Escolher chave de comparação",
+    "Exportar ausências, duplicatas e divergências"
+  ],
+  "implemented_technologies": [
+    "R",
+    "Biblioteca padrão"
+  ],
+  "validation": "Consulte GitHub Actions"
+}
