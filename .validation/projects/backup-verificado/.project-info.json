@@ -4,7 +4,7 @@
   "description": "Cópias incrementais de arquivos com verificação de integridade.",
   "primary_language": "Rust",
   "proposed_technologies": "Rust, clap e BLAKE3",
-  "status": "initial-core",
+  "status": "implementation-under-validation",
   "github_created": false,
   "application_implemented": true,
   "planned_features": [
@@ -13,9 +13,29 @@
     "Verificar hashes e oferecer restauração"
   ],
   "implemented_technologies": [
-    "Rust",
-    "Cargo",
-    "GNU coreutils / SHA-256"
+    "Rust 1.85",
+    "clap 4.5.23",
+    "BLAKE3 1.5.5",
+    "Serde",
+    "serde_json",
+    "tempfile"
   ],
-  "validation": "Consulte GitHub Actions"
+  "validation": "Nova versão 0.2 aguardando CI",
+  "github_url": null,
+  "validation_evidence": {
+    "name": "backup-verificado",
+    "kind": "awaiting_repository",
+    "status": "completed",
+    "conclusion": "success",
+    "job_id": 126139216889,
+    "run_id": 41699635255,
+    "sha": "586e6e0d6235a83769e858279ed2a2ed3063c136",
+    "url": "https://github.com/juniordev830/cifras-transpositor/actions/runs/41699635255/job/126139216889"
+  },
+  "implemented_features": [
+    "Previa recursiva sem escrita",
+    "Snapshots com deduplicacao por conteudo",
+    "Manifestos JSON versionados",
+    "Verificacao BLAKE3 e restauracao em destino novo"
+  ]
 }

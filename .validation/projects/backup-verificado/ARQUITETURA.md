@@ -1,50 +1,28 @@
-# Arquitetura proposta — Backup Verificado
+# Arquitetura implementada
 
-## Objetivo
+A CLI recebe um comando tipado por clap e chama a API de `Repository`. O domínio valida os manifestos independentemente da interface; o adaptador de arquivos mantém objetos e manifestos em pastas próprias.
 
-Cópias incrementais de arquivos com verificação de integridade.
+```mermaid
+flowchart TD
+    CLI["CLI / clap"] --> API["Repository"]
+    API --> RULES["Manifest e caminhos"]
+    API --> OBJECTS["Objetos BLAKE3"]
+    API --> MANIFESTS["Manifestos JSON"]
+```
 
-## Escolha técnica
+## Fluxo de salvamento
 
-Ferramenta de sistema com verificação de integridade e tratamento explícito de erros.
+1. Validar nome, repositório e separação entre origem e destino.
+2. Obter a trava de escrita com criação exclusiva de `.write-lock`.
+3. Varrer e calcular os hashes; produzir o mesmo plano usado por `plan`.
+4. Verificar objetos existentes e copiar somente conteúdos novos para temporários.
+5. Conferir hash e tamanho do temporário antes de publicar o objeto sem sobrescrita.
+6. Gravar o manifesto somente depois dos objetos. Soltar a trava ao finalizar.
 
-Stack proposta: Rust, clap e BLAKE3.
+Os objetos são imutáveis para a aplicação. Uma falha antes do manifesto pode deixar objetos não referenciados, mas não substitui snapshots anteriores. A ferramenta não fornece uma transação entre vários arquivos nem uma garantia de recuperação após qualquer falha física de armazenamento.
 
-## Conceitos de domínio a detalhar
+## Fluxo de restauração
 
-- Manifesto
-- Entrada
-- Verificação
+O mesmo manifesto validado é usado para conferir objetos e restaurar. Todos os objetos são verificados antes da criação do destino. O destino deve estar ausente. Os arquivos são criados com exclusividade e verificados novamente após a cópia; uma falha posterior deixa a pasta parcial.
 
-## Responsabilidades
-
-| Camada | Responsabilidade |
-| --- | --- |
-| Entrada e interface | Receber dados, mostrar validações e apresentar o resultado |
-| Casos de uso | Coordenar cada operação do escopo inicial |
-| Domínio | Definir regras, invariantes e transformações sem depender da interface |
-| Adaptadores | Isolar arquivos, persistência e serviços externos quando forem adicionados |
-
-A estrutura de código será ajustada às convenções de Rust; estas camadas descrevem responsabilidades e não impõem uma quantidade fixa de pastas.
-
-## Entregas por etapas
-
-1. Escrever um cenário de uso com entrada e resultado esperado.
-2. Implementar a menor operação útil e tratar entrada inválida.
-3. Concluir os demais itens do escopo inicial.
-4. Adicionar persistência ou integração somente onde o fluxo precisar.
-5. Registrar instalação, execução, validação e limitações.
-
-## Escopo funcional
-
-- [ ] Simular plano de cópia
-- [ ] Copiar arquivos para destino escolhido
-- [ ] Verificar hashes e oferecer restauração
-
-## Dados e integrações
-
-Não há serviços externos conectados nem dados reais neste pacote. Exemplos devem ser fictícios. Projetos que consultarem fontes públicas devem registrar a fonte, a data e as condições de uso junto dos dados importados.
-
-## Estado de validação
-
-A especificação foi preparada. Compilação e testes da aplicação ainda não se aplicam porque o código não foi implementado.
+Detalhes: `docs/FORMATO.md`, `docs/OPERACAO.md` e `docs/DECISOES.md`.

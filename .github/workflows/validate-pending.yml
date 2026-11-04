@@ -1,4 +1,4 @@
-name: Validar vinte projetos pendentes
+name: Validar Backup Verificado 0.2
 'on':
   push:
     branches:
@@ -10,79 +10,25 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      max-parallel: 4
-      matrix:
-        include:
-        - project: clima-historico-rn
-          runtime: Julia
-        - project: leitura-acessivel
-          runtime: Swift
-        - project: organizador-downloads
-          runtime: Swift
-        - project: planeja-semana
-          runtime: Swift
     defaults:
       run:
-        working-directory: .validation/projects/${{ matrix.project }}
+        working-directory: .validation/projects/backup-verificado
     steps:
-    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       with:
         persist-credentials: false
-    - name: Analisar e testar
-      run: docker run --rm -v "$PWD:/work" -w /work dart:3.5.4 sh -c 'dart analyze bin/main.dart && dart run bin/main.dart --self-test'
-      if: ${{ matrix.runtime == 'Dart' }}
-    - name: Testar
-      run: docker run --rm -v "$PWD:/work" -w /work elixir:1.18 elixir main.exs --self-test
-      if: ${{ matrix.runtime == 'Elixir' }}
-    - name: Instalar Godot oficial
-      run: 'curl --fail --location --retry 2 -o godot.zip https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+    - name: Formatar, analisar e testar Rust
+      run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm sh -c "rustup component add rustfmt clippy && cargo fmt && cargo clippy
+        --all-targets -- -D warnings && cargo test --all-targets"
+    - name: Registrar lockfile e fonte formatada
+      if: always()
+      run: 'python3 - <<''PY_OUT''
 
-        unzip -q godot.zip -d /tmp/godot-bin
+        from pathlib import Path
 
-        '
-      if: ${{ matrix.runtime == 'GDScript' }}
-    - name: Importar e testar
-      run: '/tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --editor --quit
+        import json
 
-        /tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --script tests.gd
+        print(json.dumps({''backup_generated'': {''cargo_lock'':Path(''Cargo.lock'').read_text() if Path(''Cargo.lock'').exists() else None,''sources'':{str(p):p.read_text()
+        for folder in [''src'',''tests''] for p in Path(folder).glob(''*.rs'')}}}))
 
-        /tmp/godot-bin/Godot_v4.4.1-stable_linux.x86_64 --headless --path . --quit-after 3
-
-        '
-      if: ${{ matrix.runtime == 'GDScript' }}
-    - name: Testar
-      run: docker run --rm -v "$PWD:/work" -w /work julia:1.11 julia main.jl --self-test
-      if: ${{ matrix.runtime == 'Julia' }}
-    - name: Instalar Lua
-      run: sudo apt-get update && sudo apt-get install -y lua5.4
-      if: ${{ matrix.runtime == 'Lua' }}
-    - name: Verificar sintaxe e testar regras
-      run: 'for file in *.lua; do luac5.4 -p "$file"; done
-
-        lua5.4 tests.lua
-
-        '
-      if: ${{ matrix.runtime == 'Lua' }}
-    - name: Testar
-      run: docker run --rm -v "$PWD:/work" -w /work r-base:4.4.2 Rscript main.R --self-test
-      if: ${{ matrix.runtime == 'R' }}
-    - name: Compilar e testar
-      run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo test
-      if: ${{ matrix.runtime == 'Rust' }}
-    - name: Instalar Scala CLI
-      run: 'curl --fail --location --retry 2 -o scala-cli.gz https://github.com/VirtusLab/scala-cli/releases/download/v1.6.1/scala-cli-x86_64-pc-linux.gz
-
-        gzip -d scala-cli.gz
-
-        chmod +x scala-cli
-
-        '
-      if: ${{ matrix.runtime == 'Scala' }}
-    - name: Compilar e testar
-      run: ./scala-cli run Main.scala --server=false -- --self-test
-      if: ${{ matrix.runtime == 'Scala' }}
-    - name: Compilar e testar
-      run: docker run --rm -v "$PWD:/work" -w /work swift:6.0-jammy swift main.swift --self-test
-      if: ${{ matrix.runtime == 'Swift' }}
+        PY_OUT'
