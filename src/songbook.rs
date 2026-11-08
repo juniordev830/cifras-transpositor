@@ -345,13 +345,30 @@ impl Song {
             output.push_str("</p>");
         }
         output.push_str("</header><main>\n");
+        let mut sections: Vec<DirectiveKind> = Vec::new();
         for line in &self.lines {
             match line {
                 Line::Directive { kind, value, .. } => match kind {
-                    DirectiveKind::StartChorus => output.push_str("<section class=\"chorus\" aria-label=\"Refrão\">\n"),
-                    DirectiveKind::EndChorus => output.push_str("</section>\n"),
-                    DirectiveKind::StartVerse => output.push_str("<section class=\"verse\" aria-label=\"Verso\">\n"),
-                    DirectiveKind::EndVerse => output.push_str("</section>\n"),
+                    DirectiveKind::StartChorus => {
+                        sections.push(DirectiveKind::StartChorus);
+                        output.push_str("<section class=\"chorus\" aria-label=\"Refrão\">\n");
+                    }
+                    DirectiveKind::EndChorus => {
+                        if sections.last() == Some(&DirectiveKind::StartChorus) {
+                            sections.pop();
+                            output.push_str("</section>\n");
+                        }
+                    }
+                    DirectiveKind::StartVerse => {
+                        sections.push(DirectiveKind::StartVerse);
+                        output.push_str("<section class=\"verse\" aria-label=\"Verso\">\n");
+                    }
+                    DirectiveKind::EndVerse => {
+                        if sections.last() == Some(&DirectiveKind::StartVerse) {
+                            sections.pop();
+                            output.push_str("</section>\n");
+                        }
+                    }
                     DirectiveKind::Comment => {
                         output.push_str("<p><small>");
                         output.push_str(&escape_html(value));
@@ -382,6 +399,7 @@ impl Song {
                 }
             }
         }
+        for _ in sections { output.push_str("</section>\n"); }
         output.push_str("</main></body></html>\n");
         output
     }
@@ -497,6 +515,15 @@ mod tests {
         let html = song("{soc}\n[C]Oi\n{eoc}\n").html();
         assert!(html.contains("class=\"chorus\""));
         assert!(html.contains("</section>"));
+    }
+    #[test] fn html_ignores_unmatched_section_end() {
+        let html = song("{eoc}\n[C]Oi\n").html();
+        assert!(!html.contains("</section>"));
+        assert!(html.contains("[C]"));
+    }
+    #[test] fn html_closes_unfinished_sections() {
+        let html = song("{soc}\n[C]Oi\n").html();
+        assert!(html.contains("</section>\n</main>"));
     }
     #[test] fn report_contains_counts_and_analysis() {
         let report = song("{title: Luz}\n{key: C}\n[C]oi [G]oi [C]oi\n").report();
