@@ -1,3 +1,6 @@
+mod music;
+mod songbook;
+
 use std::{env, fs, io::{self, Read}, process};
 
 const SHARPS: [&str; 12] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -94,18 +97,30 @@ fn transpose(text: &str, shift: i32, flats: bool) -> String {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().skip(1).collect();
     if args.is_empty() || args[0] == "--help" {
-        println!("Uso: cifras-transpositor SEMITONS [ARQUIVO|-] [--bemol]\nSem arquivo, lê stdin. Apenas linhas compostas de cifras são transpostas.");
+        println!("Uso: cifras-transpositor SEMITONS [ARQUIVO|-] [--bemol] [--formato=texto|chordpro|html|relatorio]\nSem arquivo, lê stdin. Reconhece linhas de cifras e acordes [C] embutidos na letra.\nFormatos adicionais: ChordPro, HTML escapado e relatório de análise musical.");
         return Ok(());
     }
     let shift: i32 = args[0].parse().map_err(|_| "SEMITONS deve ser inteiro")?;
     let flats = args.iter().any(|a| a == "--bemol");
-    let paths: Vec<_> = args[1..].iter().filter(|a| a.as_str() != "--bemol").collect();
+    let format = args.iter().skip(1).find_map(|arg| arg.strip_prefix("--formato=")).unwrap_or("texto");
+    if !["texto", "chordpro", "html", "relatorio"].contains(&format) {
+        return Err(format!("Formato inválido: {format}").into());
+    }
+    let paths: Vec<_> = args[1..].iter()
+        .filter(|a| a.as_str() != "--bemol" && !a.starts_with("--formato=")).collect();
     if paths.len() > 1 { return Err("Informe somente um arquivo".into()); }
     let input = match paths.first() {
         Some(p) if p.as_str() != "-" => fs::read_to_string(p)?,
         _ => { let mut text=String::new(); io::stdin().read_to_string(&mut text)?; text }
     };
-    print!("{}", transpose(&input, shift, flats));
+    let output = match format {
+        "texto" => transpose(&input, shift, flats),
+        "chordpro" => songbook::Song::parse(&input).transpose(shift, flats).chordpro(),
+        "html" => songbook::Song::parse(&input).transpose(shift, flats).html(),
+        "relatorio" => songbook::Song::parse(&input).transpose(shift, flats).report(),
+        _ => unreachable!(),
+    };
+    print!("{output}");
     Ok(())
 }
 fn main() { if let Err(error) = run() { eprintln!("Erro: {error}"); process::exit(2); } }
