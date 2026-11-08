@@ -193,26 +193,17 @@ pub fn key_signature(tonic: u8, mode: Mode) -> i8 {
 }
 
 pub fn nashville(chord: &ChordSymbol, tonic: u8, mode: Mode) -> String {
+    // Nashville numbers always use the parallel major scale as the reference,
+    // including minor keys (b3, b6 and b7 rather than 3, 6 and 7).
+    const DEGREES: [&str; 12] =
+        ["1", "b2", "2", "b3", "3", "4", "#4", "5", "b6", "6", "b7", "7"];
     let interval = (chord.root + 12 - tonic) % 12;
-    let scale = mode.scale();
-    let mut best: Option<(u8, i32, usize)> = None;
-    for (index, degree) in scale.iter().enumerate() {
-        let raw = i32::from(interval) - i32::from(*degree);
-        let delta = if raw > 6 { raw - 12 } else if raw < -6 { raw + 12 } else { raw };
-        let cost = delta.abs();
-        if best.map_or(true, |(_, old, _)| cost < old.abs()) {
-            best = Some((index as u8 + 1, delta, index));
-        }
-    }
-    let (degree, alteration, _) = best.expect("scale always has seven degrees");
-    let accidental = match alteration {
-        -2 => "bb", -1 => "b", 0 => "", 1 => "#", 2 => "##", _ => "?",
-    };
+    let degree = DEGREES[interval as usize];
     let suffix = match chord.quality {
         Quality::Minor if chord.suffix.is_empty() => "m",
         _ => &chord.suffix,
     };
-    let mut result = format!("{accidental}{degree}{suffix}");
+    let mut result = format!("{degree}{suffix}");
     if let Some(bass) = chord.bass {
         let bass_symbol = ChordSymbol {
             root: bass, quality: Quality::Major, suffix: String::new(), bass: None,
@@ -267,6 +258,14 @@ pub fn analyze_progression(tokens: &[String], key: Option<&str>) -> String {
         output.push_str(&chords.iter().map(|chord| nashville(chord, candidate.tonic, candidate.mode))
             .collect::<Vec<_>>().join(" "));
         output.push('\n');
+    }
+    output.push_str("Qualidades:\n");
+    let mut qualities = BTreeMap::new();
+    for chord in &chords {
+        *qualities.entry(chord.quality.label()).or_insert(0usize) += 1;
+    }
+    for (quality, count) in qualities {
+        output.push_str(&format!("  {quality}: {count}\n"));
     }
     output.push_str("Frequências:\n");
     for (chord, count) in chord_inventory(&chords, false) {
@@ -345,6 +344,7 @@ mod tests {
         assert_eq!(nashville(&c("Dm7"), 0, Mode::Major), "2m7");
         assert_eq!(nashville(&c("G7"), 0, Mode::Major), "57");
         assert_eq!(nashville(&c("Bb"), 0, Mode::Major), "b7");
+        assert_eq!(nashville(&c("F#"), 0, Mode::Major), "#4");
     }
     #[test] fn nashville_in_g_major() {
         assert_eq!(nashville(&c("G"), 7, Mode::Major), "1");
@@ -355,6 +355,7 @@ mod tests {
         assert_eq!(nashville(&c("Am"), 9, Mode::Minor), "1m");
         assert_eq!(nashville(&c("Dm"), 9, Mode::Minor), "4m");
         assert_eq!(nashville(&c("E"), 9, Mode::Minor), "5");
+        assert_eq!(nashville(&c("C"), 9, Mode::Minor), "b3");
     }
     #[test] fn inventory_is_sorted_and_counts_repeats() {
         let counts = chord_inventory(&[c("G"), c("C"), c("G")], false);
