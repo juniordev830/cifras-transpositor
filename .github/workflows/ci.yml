@@ -13,3 +13,16 @@ jobs:
         run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo test --offline
       - name: Executar exemplo
         run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo run --offline -- 2 examples/cancao.txt
+      - name: Validar ChordPro e metadados
+        run: |
+          printf '{key: Am}\n[Am]Oi\n' |
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            cargo run --offline -- 2 - --formato=chordpro | grep -F '[Bm]Oi'
+      - name: Validar HTML e relatório
+        run: |
+          printf '[C]Ola\n' |
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            cargo run --offline -- 2 - --formato=html | grep -F '[D]'
+          printf '{key: C}\n[C]Oi\n' |
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            cargo run --offline -- 0 - --formato=relatorio | grep -F 'Graus: 1'
