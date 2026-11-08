@@ -36,3 +36,42 @@ Esta versão aceita cifras latinas de A a G, acidentes simples e os sufixos desc
 `nom`, `clap`, editor gráfico e importação de formatos são possibilidades futuras, ainda não instaladas. A arquitetura proposta anterior está em `ARQUITETURA.md` e descreve a evolução planejada.
 
 Licença: ainda não definida.
+
+
+## Leitura de ChordPro e análise musical
+
+O CLI mantém o modo original de transposição e acrescenta três formatos de saída
+sem dependências externas. As cifras entre colchetes podem aparecer no meio da
+letra; o texto original e os finais de linha CRLF são preservados no modo ChordPro.
+
+| Formato | Uso |
+| --- | --- |
+| texto | Saída compatível com o comportamento original |
+| chordpro | Reconhece acordes entre colchetes e normaliza diretivas conhecidas |
+| html | Gera documento HTML estático com metadados e cifras acessíveis |
+| relatorio | Conta acordes, estima tonalidade, sugere capotraste e mostra graus |
+
+Exemplos com conteúdo autoral ou fictício:
+
+~~~sh
+printf '{title: Canção}\n{key: Am}\n[Am]Canto [G/B]com alegria\n' | cargo run --offline -- 2 - --formato=chordpro
+printf '{title: Canção}\n[Am]Canto [G]hoje\n' | cargo run --offline -- 0 - --formato=html > cancao.html
+printf '{key: C}\n[C]Luz [G]paz [Am]vida\n' | cargo run --offline -- 0 - --formato=relatorio
+cargo test --offline
+~~~
+
+Diretivas reconhecidas: title/t, subtitle/st, artist/a, key/k, capo,
+comment/c, start_of_chorus/soc, end_of_chorus/eoc, start_of_verse/sov e
+end_of_verse/eov. Diretivas desconhecidas permanecem intactas em ChordPro.
+A validação avisa sobre tom inválido, capo fora de 0 a 12, títulos duplicados
+e seções sem fechamento.
+
+A análise harmônica é **heurística**: a tonalidade estimada não substitui a
+análise de um músico. O ranking de capotraste considera um conjunto simples
+de formas comuns de violão; não garante facilidade de execução. A cifra
+Nashville é calculada por graus e acidentes cromáticos. O HTML aplica escape
+de caracteres especiais à letra e aos metadados, sem executar scripts.
+
+**Segurança e compatibilidade:** o comando lê o arquivo ou stdin e escreve
+somente em stdout. Redirecione para um arquivo de saída diferente da entrada.
+O modo padrão continua aceitando as mesmas opções da primeira versão.
