@@ -75,3 +75,7 @@ de caracteres especiais à letra e aos metadados, sem executar scripts.
 **Segurança e compatibilidade:** o comando lê o arquivo ou stdin e escreve
 somente em stdout. Redirecione para um arquivo de saída diferente da entrada.
 O modo padrão continua aceitando as mesmas opções da primeira versão.
+
+## Sequência harmônica simplificada
+
+O relatório musical (`--formato=relatorio`) apresenta agora **Sequência simplificada**, removendo apenas as repetições consecutivas de um mesmo acorde. A sequência original e a saída da transposição permanecem intactas; cifras com baixo invertido, como `C` e `C/E`, continuam distintas. A representação normaliza notas enarmônicas no relatório, e os testes verificam repetições, inversões e notas com bemóis. É uma visão auxiliar para ensaio e arranjo, não uma análise automática do ritmo.
