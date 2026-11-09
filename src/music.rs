@@ -224,6 +224,22 @@ pub fn chord_inventory(chords: &[ChordSymbol], flats: bool) -> BTreeMap<String, 
     counts
 }
 
+/// A compact harmonic outline for arranging a song. Adjacent duplicates are
+/// suppressed, but the original chord progression is never modified.
+pub fn compact_progression(chords: &[ChordSymbol], flats: bool) -> Vec<String> {
+    let mut result: Vec<String> = Vec::new();
+    for chord in chords {
+        let bass = chord.bass
+            .map(|p| format!("/{}", name(p, flats)))
+            .unwrap_or_default();
+        let label = format!("{}{}{}", name(chord.root, flats), chord.suffix, bass);
+        if result.last() != Some(&label) {
+            result.push(label);
+        }
+    }
+    result
+}
+
 pub fn suggest_capo(chords: &[ChordSymbol]) -> Vec<(u8, usize)> {
     // Rank playable chord shapes. A capo shifts the written chord downward
     // while retaining the same concert pitch.
@@ -271,6 +287,9 @@ pub fn analyze_progression(tokens: &[String], key: Option<&str>) -> String {
     for (chord, count) in chord_inventory(&chords, false) {
         output.push_str(&format!("  {chord}: {count}\n"));
     }
+    output.push_str("Sequência simplificada: ");
+    output.push_str(&compact_progression(&chords, false).join(" -> "));
+    output.push('\n');
     if let Some((fret, playable)) = suggest_capo(&chords).first() {
         output.push_str(&format!("Capotraste sugerido: casa {fret} ({playable}/{} formas simples)\n", chords.len()));
     }
@@ -386,4 +405,23 @@ mod tests {
     #[test] fn report_without_chords() {
         assert_eq!(analyze_progression(&[], None), "Nenhuma cifra reconhecida.\n");
     }
+    #[test] fn compact_progression_removes_only_adjacent_repeats() {
+        let chords = [c("C"), c("C"), c("G/B"), c("G/B"), c("Am"), c("C")];
+        assert_eq!(compact_progression(&chords, false),
+            vec!["C", "G/B", "Am", "C"]);
+    }
+    #[test] fn compact_progression_respects_inversion_and_flats() {
+        let chords = [c("C"), c("C/E"), c("C"), c("B#"), c("Db")];
+        assert_eq!(compact_progression(&chords, true),
+            vec!["C", "C/E", "C", "Db"]);
+        assert!(compact_progression(&[], false).is_empty());
+    }
+    #[test] fn report_contains_the_compact_sequence() {
+        let report = analyze_progression(&[
+            "C".into(), "C".into(), "G".into(), "G".into(), "Am".into()
+        ], Some("C"));
+        assert!(report.contains("Sequência simplificada: C -> G -> Am"));
+        assert!(report.contains("Acordes encontrados: 5"));
+    }
+
 }
