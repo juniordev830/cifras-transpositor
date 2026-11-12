@@ -35,3 +35,7 @@ Esta versão aceita cifras latinas de A a G, acidentes simples e os sufixos desc
 `nom`, `clap`, editor gráfico e importação de formatos são possibilidades futuras, ainda não instaladas. A arquitetura proposta anterior está em `ARQUITETURA.md` e descreve a evolução planejada.
 
 Licença: ainda não definida.
+
+## Roteiro de qualidade
+
+Consulte o [guia de validação e manutenção](docs/GUIA_DE_VALIDACAO.md) para reproduzir testes, entender as limitações e revisar mudanças com segurança.
