@@ -10,19 +10,19 @@ jobs:
         with:
           persist-credentials: false
       - name: Compilar e testar
-        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo test --offline
+        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 cargo test --offline
       - name: Executar exemplo
-        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm cargo run --offline -- 2 examples/cancao.txt
+        run: docker run --rm -v "$PWD:/work" -w /work rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 cargo run --offline -- 2 examples/cancao.txt
       - name: Validar ChordPro e metadados
         run: |
           printf '{key: Am}\n[Am]Oi\n' |
-            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 \
             cargo run --offline -- 2 - --formato=chordpro | grep -F '[Bm]Oi'
       - name: Validar HTML e relatório
         run: |
           printf '[C]Ola\n' |
-            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 \
             cargo run --offline -- 2 - --formato=html | grep -F '[D]'
           printf '{key: C}\n[C]Oi\n' |
-            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm \
+            docker run -i --rm -v "$PWD:/work" -w /work rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 \
             cargo run --offline -- 0 - --formato=relatorio | grep -F 'Graus: 1'
