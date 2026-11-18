@@ -5,6 +5,8 @@ CLI em **Rust** para mudar o tom de linhas de cifras, incluindo acidentes, exten
 ## Primeira versão
 
 - Transposição positiva e negativa, com nomes em sustenidos ou bemóis.
+- Leitura de acidentes na raiz e no baixo com símbolos musicais (`♯` e `♭`) ou com `#` e `b`.
+- As alterações da cifra são preservadas na transposição, como em `C7(♭9)`, `Bø7` e `D°7`.
 - Letras preservadas: linhas compostas inteiramente de cifras e barras são transpostas; em linhas com texto, acordes delimitados por colchetes como `[Am]` e `[G/B]` também são transpostos sem alterar a letra.
 - Mantém as colunas iniciais quando há espaço; se um acorde cresce, conserva ao menos um espaço antes do próximo.
 - Leitura de arquivo ou entrada padrão; o original nunca é regravado.
@@ -31,7 +33,7 @@ O ambiente de preparação não possui compilador Rust; a validação executáve
 
 ## Limites e próximos passos
 
-Esta versão aceita cifras latinas de A a G, acidentes simples e os sufixos descritos no parser. Acordes **entre colchetes** são transpostos dentro de linhas de letra, mantendo palavras e marcações inválidas, como `[Refrão]`, intactas. Em linhas mistas, somente os acordes entre colchetes são transpostos. Ainda não interpreta tablaturas, notação em graus ou cifras embutidas sem colchetes. Uma linha de letra formada somente por nomes de acordes também seria interpretada como cifras. Alinhamento usa colunas ASCII das cifras.
+Esta versão aceita cifras latinas de A a G, acidentes simples e os sufixos descritos no parser. Acordes **entre colchetes** são transpostos dentro de linhas de letra, mantendo palavras e marcações inválidas, como `[Refrão]`, intactas. Em linhas mistas, somente os acordes entre colchetes são transpostos. Ainda não interpreta tablaturas, notação em graus ou cifras embutidas sem colchetes. Uma linha de letra formada somente por nomes de acordes também seria interpretada como cifras. O alinhamento conta caracteres em vez de bytes.
 
 `nom`, `clap`, editor gráfico e importação de formatos são possibilidades futuras, ainda não instaladas. A arquitetura proposta anterior está em `ARQUITETURA.md` e descreve a evolução planejada.
 

@@ -43,9 +43,9 @@ pub fn pitch(input: &str) -> Option<(u8, usize)> {
         b'C' => 0i32, b'D' => 2, b'E' => 4, b'F' => 5,
         b'G' => 7, b'A' => 9, b'B' => 11, _ => return None,
     };
-    let (alteration, len) = match input.as_bytes().get(1) {
-        Some(b'#') => (1, 2),
-        Some(b'b') => (-1, 2),
+    let (alteration, len) = match input[1..].chars().next() {
+        Some(symbol @ ('#' | '♯')) => (1, 1 + symbol.len_utf8()),
+        Some(symbol @ ('b' | '♭')) => (-1, 1 + symbol.len_utf8()),
         _ => (0, 1),
     };
     Some(((root + alteration).rem_euclid(12) as u8, len))
@@ -59,7 +59,8 @@ pub fn parse_chord(value: &str) -> Option<ChordSymbol> {
     let suffix = pieces.next()?.to_owned();
     let bass = pieces.next().map(pitch).transpose_option()?;
     if pieces.next().is_some() { return None; }
-    let quality = if suffix.starts_with("dim") || suffix.starts_with('o') {
+    let quality = if ["dim", "°", "ø", "m7b5", "m7♭5", "min7b5", "min7♭5"]
+        .iter().any(|marker| suffix.starts_with(*marker)) {
         Quality::Diminished
     } else if suffix.starts_with("aug") || suffix.starts_with('+') {
         Quality::Augmented
@@ -328,6 +329,12 @@ mod tests {
         assert_eq!(c("Daug").quality, Quality::Augmented);
         assert_eq!(c("Gsus4").quality, Quality::Suspended);
         assert_eq!(c("A5").quality, Quality::Power);
+    }
+    #[test] fn recognizes_the_diminished_triad_in_half_diminished_symbols() {
+        for symbol in ["Bm7b5", "Bm7♭5", "Bø7", "B°7"] {
+            assert_eq!(c(symbol).quality, Quality::Diminished, "{symbol}");
+            assert_eq!(chord_pitches(&c(symbol)), vec![11, 2, 5]);
+        }
     }
     #[test] fn triads_have_expected_pitches() {
         assert_eq!(chord_pitches(&c("C")), vec![0, 4, 7]);
