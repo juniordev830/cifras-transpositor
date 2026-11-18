@@ -43,9 +43,9 @@ pub fn pitch(input: &str) -> Option<(u8, usize)> {
         b'C' => 0i32, b'D' => 2, b'E' => 4, b'F' => 5,
         b'G' => 7, b'A' => 9, b'B' => 11, _ => return None,
     };
-    let (alteration, len) = match input.as_bytes().get(1) {
-        Some(b'#') => (1, 2),
-        Some(b'b') => (-1, 2),
+    let (alteration, len) = match input[1..].chars().next() {
+        Some(symbol @ ('#' | '♯')) => (1, 1 + symbol.len_utf8()),
+        Some(symbol @ ('b' | '♭')) => (-1, 1 + symbol.len_utf8()),
         _ => (0, 1),
     };
     Some(((root + alteration).rem_euclid(12) as u8, len))

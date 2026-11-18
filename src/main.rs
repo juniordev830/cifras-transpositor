@@ -3,15 +3,10 @@ mod songbook;
 
 use std::{env, fs, io::{self, Read}, process};
 
-const SHARPS: [&str; 12] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const FLATS: [&str; 12] = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-
 fn note(input: &str, shift: i32, flats: bool) -> Option<(String, usize)> {
-    let first = input.chars().next()?;
-    let pitch: i32 = match first { 'C'=>0, 'D'=>2, 'E'=>4, 'F'=>5, 'G'=>7, 'A'=>9, 'B'=>11, _=>return None };
-    let (accidental, used) = match input.as_bytes().get(1) { Some(b'#')=>(1,2), Some(b'b')=>(-1,2), _=>(0,1) };
-    let names = if flats { &FLATS } else { &SHARPS };
-    Some((names[(pitch + accidental + shift.rem_euclid(12)).rem_euclid(12) as usize].to_owned(), used))
+    let (pitch, used) = music::pitch(input)?;
+    let shifted = (i32::from(pitch) + shift.rem_euclid(12)).rem_euclid(12) as u8;
+    Some((music::name(shifted, flats).to_owned(), used))
 }
 
 fn chord(token: &str, shift: i32, flats: bool) -> Option<String> {
@@ -74,16 +69,22 @@ fn line(input: &str, shift: i32, flats: bool) -> String {
     }
     // Keep chord starting columns when there is enough whitespace; never join chords.
     let mut output = String::new();
+    let mut input_offset = 0;
     let mut input_column = 0;
+    let mut output_column = 0;
     for token in tokens {
-        let offset = input[input_column..].find(token).unwrap();
-        let start = input_column + offset;
-        let needed = start.saturating_sub(output.len());
-        output.push_str(&" ".repeat(if output.is_empty() { needed } else { needed.max(1) }));
-        output.push_str(&chord(token, shift, flats).unwrap_or_else(|| token.to_owned()));
-        input_column = start + token.len();
+        let start = input_offset + input[input_offset..].find(token).unwrap();
+        input_column += input[input_offset..start].chars().count();
+        let needed = input_column.saturating_sub(output_column);
+        let padding = if output.is_empty() { needed } else { needed.max(1) };
+        let rendered = chord(token, shift, flats).unwrap_or_else(|| token.to_owned());
+        output.push_str(&" ".repeat(padding));
+        output.push_str(&rendered);
+        output_column += padding + rendered.chars().count();
+        input_column += token.chars().count();
+        input_offset = start + token.len();
     }
-    output.push_str(&input[input_column..]);
+    output.push_str(&input[input_offset..]);
     output
 }
 
@@ -132,6 +133,12 @@ mod tests {
     #[test] fn enharmonic_and_overflow() { assert_eq!(chord("B#",i32::MAX,true).unwrap(),"G"); assert_eq!(chord("Cb",1,false).unwrap(),"C"); }
     #[test] fn preserve_lyrics_and_columns() { assert_eq!(transpose("C    G/B   Am\nA vida segue\n",2,false),"D    A/C#  Bm\nA vida segue\n"); }
     #[test] fn flat_output_and_crlf() { assert_eq!(transpose("C  F\r\n",1,true),"Db Gb\r\n"); }
+    #[test] fn transposes_unicode_accidentals_in_text_and_chordpro() {
+        assert_eq!(transpose("C♯m7/G♯   B♭\n", -2, false), "Bm7/F#    G#\n");
+        assert_eq!(transpose("[B♭]Verso [F♯/A♯]\n", 1, true), "[B]Verso [G/B]\n");
+        let song = songbook::Song::parse("{key: B♭m}\n[B♭m]Verso\n");
+        assert_eq!(song.transpose(2, true).chordpro(), "{key: Cm}\n[Cm]Verso\n");
+    }
     #[test] fn transpose_inline_lyrics_and_bass_chords() {
         assert_eq!(
             transpose("[Am]Cantarei [G/B]com alegria\n", 2, false),
