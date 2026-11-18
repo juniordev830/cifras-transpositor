@@ -6,6 +6,7 @@ CLI em **Rust** para mudar o tom de linhas de cifras, incluindo acidentes, exten
 
 - Transposição positiva e negativa, com nomes em sustenidos ou bemóis.
 - Leitura de acidentes na raiz e no baixo com símbolos musicais (`♯` e `♭`) ou com `#` e `b`.
+- As alterações da cifra são preservadas na transposição, como em `C7(♭9)`, `Bø7` e `D°7`.
 - Letras preservadas: linhas compostas inteiramente de cifras e barras são transpostas; em linhas com texto, acordes delimitados por colchetes como `[Am]` e `[G/B]` também são transpostos sem alterar a letra.
 - Mantém as colunas iniciais quando há espaço; se um acorde cresce, conserva ao menos um espaço antes do próximo.
 - Leitura de arquivo ou entrada padrão; o original nunca é regravado.

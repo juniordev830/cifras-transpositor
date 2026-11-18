@@ -15,10 +15,10 @@ fn chord(token: &str, shift: i32, flats: bool) -> Option<String> {
     let suffix = parts.next()?;
     // Explicit grammar prevents treating arbitrary words as chords.
     let mut rest = suffix;
-    if let Some(s) = ["maj", "min", "dim", "aug", "sus", "add", "m"].iter().find(|s| rest.starts_with(**s)) {
+    if let Some(s) = ["maj", "min", "dim", "aug", "sus", "add", "m", "°", "ø"].iter().find(|s| rest.starts_with(**s)) {
         rest = &rest[s.len()..];
     }
-    if !rest.chars().all(|c| c.is_ascii_digit() || "#b()+-".contains(c)) { return None; }
+    if !rest.chars().all(|c| c.is_ascii_digit() || "#b♯♭()+-".contains(c)) { return None; }
     let bass = match parts.next() {
         Some(b) => { let (transposed, n) = note(b, shift, flats)?; if n != b.len() { return None; } format!("/{transposed}") },
         None => String::new()
@@ -133,6 +133,11 @@ mod tests {
     #[test] fn enharmonic_and_overflow() { assert_eq!(chord("B#",i32::MAX,true).unwrap(),"G"); assert_eq!(chord("Cb",1,false).unwrap(),"C"); }
     #[test] fn preserve_lyrics_and_columns() { assert_eq!(transpose("C    G/B   Am\nA vida segue\n",2,false),"D    A/C#  Bm\nA vida segue\n"); }
     #[test] fn flat_output_and_crlf() { assert_eq!(transpose("C  F\r\n",1,true),"Db Gb\r\n"); }
+    #[test] fn preserves_alterations_in_text_and_chordpro() {
+        assert_eq!(transpose("[C7(♭9)]Letra [F♯m7♭5]\n", 2, false), "[D7(♭9)]Letra [G#m7♭5]\n");
+        let song = songbook::Song::parse("[Bø7]Letra [D°7]\n");
+        assert_eq!(song.transpose(2, false).chordpro(), "[C#ø7]Letra [E°7]\n");
+    }
     #[test] fn transposes_unicode_accidentals_in_text_and_chordpro() {
         assert_eq!(transpose("C♯m7/G♯   B♭\n", -2, false), "Bm7/F#    G#\n");
         assert_eq!(transpose("[B♭]Verso [F♯/A♯]\n", 1, true), "[B]Verso [G/B]\n");
