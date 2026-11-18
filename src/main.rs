@@ -95,6 +95,20 @@ fn transpose(text: &str, shift: i32, flats: bool) -> String {
     }).collect()
 }
 
+fn render(input: &str, shift: i32, flats: bool, format: &str) -> String {
+    let input = input.strip_prefix('\u{feff}').unwrap_or(input);
+    if format == "texto" {
+        return transpose(input, shift, flats);
+    }
+    let song = songbook::Song::parse(input).transpose(shift, flats);
+    match format {
+        "chordpro" => song.chordpro(),
+        "html" => song.html(),
+        "relatorio" => song.report(),
+        _ => unreachable!(),
+    }
+}
+
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().skip(1).collect();
     if args.is_empty() || args[0] == "--help" {
@@ -114,14 +128,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         Some(p) if p.as_str() != "-" => fs::read_to_string(p)?,
         _ => { let mut text=String::new(); io::stdin().read_to_string(&mut text)?; text }
     };
-    let output = match format {
-        "texto" => transpose(&input, shift, flats),
-        "chordpro" => songbook::Song::parse(&input).transpose(shift, flats).chordpro(),
-        "html" => songbook::Song::parse(&input).transpose(shift, flats).html(),
-        "relatorio" => songbook::Song::parse(&input).transpose(shift, flats).report(),
-        _ => unreachable!(),
-    };
-    print!("{output}");
+    print!("{}", render(&input, shift, flats, format));
     Ok(())
 }
 fn main() { if let Err(error) = run() { eprintln!("Erro: {error}"); process::exit(2); } }
@@ -129,6 +136,18 @@ fn main() { if let Err(error) = run() { eprintln!("Erro: {error}"); process::exi
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn bom_does_not_hide_first_chord_or_directive() {
+        assert_eq!(render("\u{feff}C  F\r\n", 2, false, "texto"), "D  G\r\n");
+        let chordpro = "\u{feff}{title: Noite}\r\n{key: C}\r\n[C]Verso\r\n";
+        assert_eq!(
+            render(chordpro, 2, false, "chordpro"),
+            "{title: Noite}\r\n{key: D}\r\n[D]Verso\r\n"
+        );
+        assert!(render(chordpro, 2, false, "html").contains("<h1>Noite</h1>"));
+        assert!(render(chordpro, 2, false, "relatorio").contains("D"));
+    }
+
     #[test] fn slash_and_negative() { assert_eq!(chord("C#m7/G#",-2,false).unwrap(),"Bm7/F#"); }
     #[test] fn enharmonic_and_overflow() { assert_eq!(chord("B#",i32::MAX,true).unwrap(),"G"); assert_eq!(chord("Cb",1,false).unwrap(),"C"); }
     #[test] fn preserve_lyrics_and_columns() { assert_eq!(transpose("C    G/B   Am\nA vida segue\n",2,false),"D    A/C#  Bm\nA vida segue\n"); }
