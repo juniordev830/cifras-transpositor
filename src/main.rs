@@ -117,7 +117,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     let shift: i32 = args[0].parse().map_err(|_| "SEMITONS deve ser inteiro")?;
     let flats = args.iter().any(|a| a == "--bemol");
-    let format = args.iter().skip(1).find_map(|arg| arg.strip_prefix("--formato=")).unwrap_or("texto");
+    let mut formats = args[1..].iter().filter_map(|arg| arg.strip_prefix("--formato="));
+    let format = formats.next().unwrap_or("texto");
+    if formats.next().is_some() {
+        return Err("Informe --formato somente uma vez".into());
+    }
     if !["texto", "chordpro", "html", "relatorio"].contains(&format) {
         return Err(format!("Formato inválido: {format}").into());
     }
